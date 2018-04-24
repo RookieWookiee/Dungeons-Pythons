@@ -1,4 +1,4 @@
-from game_object import GameObject
+from src.game_object import GameObject
 
 
 class WarUnit(GameObject):

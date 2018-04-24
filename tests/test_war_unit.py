@@ -1,5 +1,5 @@
 import unittest
-from war_unit import WarUnit
+from src.war_unit import WarUnit
 
 
 class TestWarUnit(unittest.TestCase):
