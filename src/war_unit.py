@@ -57,7 +57,7 @@ class WarUnit(GameObject):
         return True
 
     def attack(self, by=None):
-        ### To be refactored
+        # To be refactored
         if by == "weapon":
             if self._weapon:
                 return self._weapon.damage
