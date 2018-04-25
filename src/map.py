@@ -3,21 +3,29 @@ from src.empty_cell import EmptyCell
 from src.spawn import Spawn
 from src.treasure import Treasure
 from src.gateway import Gateway
+from src.hero import Hero
+from src.enemy import Enemy
+
+from os import linesep
 
 
 class Map:
-    #TODO: add enemy and hero
     __class_lookup = {
             '.': EmptyCell,
+            'T': EmptyCell,
+            'E': EmptyCell,
             '#': Wall,
             'S': Spawn,
-            'T': Treasure,
-            'G': Gateway
+            'G': Gateway,
             }
 
     def __init__(self, lines):
         self.grid = []
         spawnpoints = []
+        self.hero = None
+        self.treasures = set()
+        self.enemies = set()
+
         len_rows = len(lines)
 
         for row, line in zip(range(len_rows), lines):
@@ -26,6 +34,16 @@ class Map:
 
             for col, sym in zip(range(len_cols), line):
                 obj = self.__class_lookup[sym](row=row, col=col)
+
+                if sym == Treasure.sym:
+                    treasure = Treasure(row=row, col=col)
+                    obj.occupant = treasure
+                    self.treasures.add(treasure)
+                elif sym == Enemy.sym:
+                    enemy = Enemy(row=row, col=col, health=None, mana=None, damage=None)
+                    obj.occupant = enemy
+                    self.enemies.add(enemy)
+
                 self.grid[-1].append(obj)
 
                 if isinstance(obj, Spawn):
@@ -36,20 +54,44 @@ class Map:
     @classmethod
     def load(cls, fname):
         with open(fname) as f:
-            return cls(f.readlines())
+            return cls([x.strip() for x in f])
+
+    def __str__(self):
+        res = []
+        rows = len(self.grid)
+        for row, objects in zip(range(rows), self.grid):
+            str_row = []
+            cols = len(self.grid[row])
+            for col, obj in zip(range(cols), self.grid[row]):
+                if (row, col) in self.treasures:
+                    str_row.append(Treasure.sym)
+                elif (row, col) in self.enemies:
+                    str_row.append(Enemy.sym)
+                else:
+                    str_row.append(str(obj))
+
+            if self.hero is not None and row == self.hero.row:
+                str_row[self.hero.col] = str(self.hero)
+
+            res.append(''.join(str_row))
+
+        return linesep.join(res)
 
     def print_map(self):
-        for row in self.grid:
-            row_str = map(str, row)
-            print("".join(row_str))
+        print(self)
 
-    #TODO: test it
     def spawn(self, hero):
+        self.hero = hero
+
+        if not isinstance(hero, Hero):
+            expected, actual = Hero.__name__, hero.__class__.__name__
+            raise TypeError(
+                    f'Invalid hero: expected {expected}, got {actual}')
+
         try:
-            cell = next(self.spawnpoints)
-            row, col = cell.row, cell.col
-            cell = EmptyCell()  #This probably won't work
-            cell.row, cell.col = row, col
+            spawn = next(self.spawnpoints)
+            self.grid[spawn.row][spawn.col] = EmptyCell(row=spawn.row, col=spawn.col)
+            self.hero.row, self.hero.col = spawn.row, spawn.col
 
             return True
         except StopIteration:

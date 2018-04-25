@@ -2,10 +2,11 @@ from src.game_object import GameObject
 
 
 class WarUnit(GameObject):
-    def __init__(self, *, row, col, health, mana):
+    def __init__(self, row, col, health, mana):
         super().__init__(row, col)
         self.health = health
         self.mana = mana
+        self.damage = 0
         self.min_health = 1
         self.max_health = self.health
 
