@@ -57,7 +57,7 @@ class MapTests(unittest.TestCase):
                  title='Mighty Tester',
                  health=100,
                  mana=100,
-                 mana_regenaration_rate=2)
+                 mana_regeneration_rate=2)
         test_map = self.test_map
 
         with self.subTest('hero coordinates should be (0, 0)'):
@@ -70,7 +70,7 @@ class MapTests(unittest.TestCase):
                  title='Mighty Tester',
                  health=100,
                  mana=100,
-                 mana_regenaration_rate=2)
+                 mana_regeneration_rate=2)
         
         self.assertIsInstance(self.test_map.grid[0][0], Spawn)
         self.test_map.spawn(hero)
@@ -81,7 +81,7 @@ class MapTests(unittest.TestCase):
                  title='Mighty Tester',
                  health=100,
                  mana=100,
-                 mana_regenaration_rate=2)
+                 mana_regeneration_rate=2)
         
         self.assertTrue(self.test_map.spawn(hero))
         self.assertFalse(self.test_map.spawn(hero))
@@ -91,7 +91,7 @@ class MapTests(unittest.TestCase):
                  title='Mighty Tester',
                  health=100,
                  mana=100,
-                 mana_regenaration_rate=2)
+                 mana_regeneration_rate=2)
 
         self.test_map.spawn(hero)
         self.assertEqual((hero.row, hero.col), (0, 0))

@@ -6,9 +6,9 @@ from src.mixins.walkable import WalkableMixin as Walkable
 class Hero(WarUnit, Walkable, Printable):
     sym = 'H'
 
-    def __init__(self, *, row=None, col=None, health, mana, name, title=None, mana_regenaration_rate):
+    def __init__(self, *, row=None, col=None, health, mana, name, title=None, mana_regeneration_rate):
         super().__init__(row, col, health, mana)
-        self.mana_regen = mana_regenaration_rate
+        self.mana_regen = mana_regeneration_rate
         self.name = name
         self.title = title
 
