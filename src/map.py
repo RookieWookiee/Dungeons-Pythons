@@ -6,50 +6,57 @@ from src.gateway import Gateway
 from src.hero import Hero
 from src.enemy import Enemy
 
+from src.mixins.walkable import WalkableMixin
+from src.decorators import accepts
+
 from os import linesep
 
 
 class Map:
-    __class_lookup = {
-            '.': EmptyCell,
-            'T': EmptyCell,
-            'E': EmptyCell,
-            '#': Wall,
-            'S': Spawn,
-            'G': Gateway,
-            }
+    def _cell_factory(self, sym, row, col):
+        cls = self.__class_lookup.get(sym)
+
+        if cls is None:
+            raise ValueError(f'Unrecognized symbol: {sym}')
+
+        obj = cls(row=row, col=col)
+
+        if sym == Treasure.sym:
+            treasure = Treasure(row=row, col=col)
+            obj.trigger_enter_event(treasure)
+            self.treasures.add(treasure)
+        elif sym == Enemy.sym:
+            enemy = Enemy(row=row, col=col, health=None, mana=None, damage=None)
+            obj.trigger_enter_event(enemy)
+            self.enemies.add(enemy)
+        elif sym == Spawn.sym:
+            self.spawnpoints.append(obj)
+
+        return obj
 
     def __init__(self, lines):
-        self.grid = []
-        spawnpoints = []
+        self.__class_lookup = {
+                '.': EmptyCell,
+                'T': EmptyCell,
+                'E': EmptyCell,
+                '#': Wall,
+                'S': Spawn,
+                'G': Gateway,
+                }
+
+        self.spawnpoints = []
         self.hero = None
         self.treasures = set()
         self.enemies = set()
 
         len_rows = len(lines)
+        len_cols = len(lines[0])
 
-        for row, line in zip(range(len_rows), lines):
-            len_cols = len(lines[row])
-            self.grid.append([])
+        self.grid = [[self._cell_factory(sym, row, col)
+                    for col, sym in zip(range(len(lines[row])), line)]
+                    for row, line in zip(range(len_rows), lines)]
 
-            for col, sym in zip(range(len_cols), line):
-                obj = self.__class_lookup[sym](row=row, col=col)
-
-                if sym == Treasure.sym:
-                    treasure = Treasure(row=row, col=col)
-                    obj.occupant = treasure
-                    self.treasures.add(treasure)
-                elif sym == Enemy.sym:
-                    enemy = Enemy(row=row, col=col, health=None, mana=None, damage=None)
-                    obj.occupant = enemy
-                    self.enemies.add(enemy)
-
-                self.grid[-1].append(obj)
-
-                if isinstance(obj, Spawn):
-                    spawnpoints.append(obj)
-
-        self.spawnpoints = iter(spawnpoints)
+        self.spawnpoints = iter(self.spawnpoints)
 
     @classmethod
     def load(cls, fname):
@@ -72,7 +79,8 @@ class Map:
 
         try:
             spawn = next(self.spawnpoints)
-            self.grid[spawn.row][spawn.col] = new_cell = EmptyCell(row=spawn.row, col=spawn.col)
+            row, col = spawn.row, spawn.col
+            self.grid[row][col] = new_cell = EmptyCell(row=row, col=col)
             new_cell.occupant = hero
             self.hero.row, self.hero.col = spawn.row, spawn.col
 
