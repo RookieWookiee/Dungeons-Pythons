@@ -11,9 +11,6 @@ from src.hero import Hero
 import unittest
 
 
-# TODO:
-# add test for whether or not the spawn cell is changed
-# to empty cell after invoking spawn()
 class MapTests(unittest.TestCase):
     def setUp(self):
         self.input = ['S.##',

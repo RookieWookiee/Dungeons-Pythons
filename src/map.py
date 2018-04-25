@@ -59,20 +59,9 @@ class Map:
     def __str__(self):
         res = []
         rows = len(self.grid)
-        for row, objects in zip(range(rows), self.grid):
-            str_row = []
-            cols = len(self.grid[row])
-            for col, obj in zip(range(cols), self.grid[row]):
-                if (row, col) in self.treasures:
-                    str_row.append(Treasure.sym)
-                elif (row, col) in self.enemies:
-                    str_row.append(Enemy.sym)
-                else:
-                    str_row.append(str(obj))
 
-            if self.hero is not None and row == self.hero.row:
-                str_row[self.hero.col] = str(self.hero)
-
+        for row in self.grid:
+            str_row = map(str, row)
             res.append(''.join(str_row))
 
         return linesep.join(res)
@@ -90,7 +79,8 @@ class Map:
 
         try:
             spawn = next(self.spawnpoints)
-            self.grid[spawn.row][spawn.col] = EmptyCell(row=spawn.row, col=spawn.col)
+            self.grid[spawn.row][spawn.col] = new_cell = EmptyCell(row=spawn.row, col=spawn.col)
+            new_cell.occupant = hero
             self.hero.row, self.hero.col = spawn.row, spawn.col
 
             return True
