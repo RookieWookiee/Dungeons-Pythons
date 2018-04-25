@@ -57,14 +57,7 @@ class Map:
             return cls([x.strip() for x in f])
 
     def __str__(self):
-        res = []
-        rows = len(self.grid)
-
-        for row in self.grid:
-            str_row = map(str, row)
-            res.append(''.join(str_row))
-
-        return linesep.join(res)
+        return linesep.join([''.join(map(str, row)) for row in self.grid])
 
     def print_map(self):
         print(self)
