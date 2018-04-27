@@ -6,18 +6,18 @@ from src.mixins.walkable import WalkableMixin as Walkable
 class Hero(WarUnit, Walkable, Printable):
     sym = 'H'
 
-    def __init__(self, *, row=None, col=None, health, mana, name, title=None, mana_regeneration_rate):
+    def __init__(self, *, health, mana, name, mana_regeneration_rate, title, row=None, col=None,):
         super().__init__(row, col, health, mana)
         self.mana_regen = mana_regeneration_rate
         self.name = name
         self.title = title
 
-    def equip(weapon):
-        pass
+    def __str__(self):
+        return self.name
 
-    def learn(spell):
-        pass
-    
+    def known_as(self):
+        return "{} the {}".format(self.name, self.title)
+
     def __on_enter(self, obj):
         print('Fight')
 

@@ -6,9 +6,8 @@ from src.mixins.walkable import WalkableMixin as Walkable
 class Enemy(WarUnit, Walkable, Printable):
     sym = 'E'
 
-    def __init__(self, *, row=None, col=None, health, mana, damage):
-        super().__init__(row, col, health, mana)
-        self.damage = damage
+    def __init__(self, *, health, mana, damage, row=None, col=None):
+        super().__init__(row, col, health, mana, damage)
 
     def __on_enter(self, obj):
         print('Fight!')

@@ -1,4 +1,6 @@
 from src.game_object import GameObject
+from src.weapon import Weapon
+from src.spell import Spell
 
 
 class WarUnit(GameObject):
@@ -10,8 +12,8 @@ class WarUnit(GameObject):
         self._min_mana = 0
         self._min_health = 1
         self._max_health = self.health
-        self._weapon = None
-        self._spell = None
+        self.weapon = None
+        self.spell = None
         self.damage = damage
 
     def is_alive(self):
@@ -25,49 +27,63 @@ class WarUnit(GameObject):
     def get_mana(self):
         return self.mana
 
+    def equip(self, weapon):
+        if isinstance(weapon, Weapon):
+            self.weapon = weapon
+        else:
+            raise(ValueError("The hero can be equipped only with Weapon!"))
+
+    def learn(self, spell):
+        if isinstance(spell, Spell):
+            self.spell = spell
+        else:
+            raise (ValueError("The hero can learn onli Spell"))
+
     def can_cast(self):
-        pass
+        if self.spell and self.mana >= self.spell.mana_cost:
+            return True
+        return False
 
     def take_damage(self, damage_points):
-        assert damage_points > self._min_health - 1
-        assert type(damage_points) is int or type(damage_points) is float
-
-        if damage_points > self.health:
-            self.health = self._min_health - 1
+        if damage_points < 0:
+            raise ValueError
+        elif type(damage_points) is int or type(damage_points) is float:
+            if damage_points > self.health:
+                self.health = self._min_health - 1
+            else:
+                self.health -= damage_points
         else:
-            self.health -= damage_points
+            raise TypeError
 
     def take_healing(self, healing_points):
         assert healing_points > 0
         assert type(healing_points) is int or type(healing_points) is float
 
-        if self.health < self._min_health:
+        if not self.is_alive():
             return False
         elif healing_points + self.health > self._max_health:
             self.health = self._max_health
         else:
             self.health += healing_points
-        return True
 
     def take_mana(self, mana_points):
         if self.mana + mana_points <= self._max_mana:
             self.mana += mana_points
         else:
             self.mana = self._max_mana
-        return True
 
     def attack(self, by=None):
         # To be refactored
         if by == "weapon":
-            if self._weapon:
-                return self._weapon.damage
+            if self.weapon:
+                return self.weapon.damage
             else:
                 return 0
         if by == "spell":
-            if self._spell:
-                if self.mana >= self._spell.mana_cost:
-                    self.mana -= self._spell.mana_cost
-                    return self._spell.damage
+            if self.spell:
+                if self.mana >= self.spell.mana_cost:
+                    self.mana -= self.spell.mana_cost
+                    return self.spell.damage
                 else:
                     raise ValueError(
                         "Your mana is lower than the spell mana_cost.")
