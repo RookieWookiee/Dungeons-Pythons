@@ -15,3 +15,8 @@ class EmptyCell(GameObject, Occupiable, Printable):
 
     def __str__(self):
         return str(self.occupant) if self.occupant is not None else self.sym
+
+    def trigger_enter_event(self, obj):
+        super().trigger_enter_event(obj)
+
+        self.occupant = obj

@@ -1,8 +1,8 @@
-from src.wall import Wall
-from src.empty_cell import EmptyCell
-from src.spawn import Spawn
+from src.cells.wall import Wall
+from src.cells.empty_cell import EmptyCell
+from src.cells.spawn import Spawn
+from src.cells.gateway import Gateway
 from src.treasure import Treasure
-from src.gateway import Gateway
 from src.hero import Hero
 from src.enemy import Enemy
 
@@ -50,11 +50,13 @@ class Map:
         self.enemies = set()
 
         len_rows = len(lines)
-        len_cols = len(lines[0])
 
-        self.grid = [[self._cell_factory(sym, row, col)
-                    for col, sym in zip(range(len(lines[row])), line)]
-                    for row, line in zip(range(len_rows), lines)]
+        self.grid = [
+            [
+                self._cell_factory(sym, row, col)
+                for col, sym in zip(range(len(lines[row])), line)
+            ] for row, line in zip(range(len_rows), lines)
+        ]
 
         self.spawnpoints = iter(self.spawnpoints)
 
@@ -86,7 +88,7 @@ class Map:
 
     @accepts(str)
     def move_hero(self, direction):
-        if self.hero == None:
+        if self.hero is None:
             raise ValueError('A hero must be spawned first')
         if direction not in ('up', 'down', 'left', 'right'):
             raise ValueError('Invalid direction: expected one of the following: up, down, left, right')
