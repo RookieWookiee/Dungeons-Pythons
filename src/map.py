@@ -69,24 +69,44 @@ class Map:
     def print_map(self):
         print(self)
 
+    @accepts(Hero)
     def spawn(self, hero):
         self.hero = hero
-
-        if not isinstance(hero, Hero):
-            expected, actual = Hero.__name__, hero.__class__.__name__
-            raise TypeError(
-                    f'Invalid hero: expected {expected}, got {actual}')
 
         try:
             spawn = next(self.spawnpoints)
             row, col = spawn.row, spawn.col
             self.grid[row][col] = new_cell = EmptyCell(row=row, col=col)
-            new_cell.occupant = hero
-            self.hero.row, self.hero.col = spawn.row, spawn.col
+            new_cell.trigger_enter_event(self.hero)
+            self.hero.row, self.hero.col = row, col
 
             return True
         except StopIteration:
             return False
 
-    def move_hero(self):
-        pass
+    @accepts(str)
+    def move_hero(self, direction):
+        if self.hero == None:
+            raise ValueError('A hero must be spawned first')
+        if direction not in ('up', 'down', 'left', 'right'):
+            raise ValueError('Invalid direction: expected one of the following: up, down, left, right')
+
+        dx = 1 if direction == 'right' else -1 if direction == 'left' else 0
+        dy = 1 if direction == 'down' else -1 if direction == 'up' else 0
+
+        from_row, from_col = self.hero.row, self.hero.col
+        target_row, target_col = from_row + dy, from_col + dx
+        if (target_row < 0
+                or target_row >= len(self.grid)):
+            return False
+        if (target_col < 0 or target_col >= len(self.grid[target_row])):
+            return False
+
+        if not isinstance(self.grid[target_row][target_col], WalkableMixin):
+            return False
+
+        self.hero.row, self.hero.col = target_row, target_col
+        self.grid[from_row][from_col].trigger_leave_event()
+        self.grid[target_row][target_col].trigger_enter_event(self.hero)
+
+        return True
