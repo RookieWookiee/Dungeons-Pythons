@@ -8,3 +8,4 @@ class Spawn(GameObject, Occupiable, Printable):
 
     def __init__(self, *, row, col):
         super().__init__(row, col)
+        self.occupant = None
