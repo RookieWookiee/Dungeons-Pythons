@@ -10,6 +10,7 @@ from src.mixins.walkable import WalkableMixin
 from src.decorators import accepts
 
 from os import linesep
+from operator import attrgetter
 
 
 class Map:
@@ -66,7 +67,9 @@ class Map:
             return cls([x.strip() for x in f])
 
     def __str__(self):
-        return linesep.join([''.join(map(str, row)) for row in self.grid])
+        return linesep.join([
+            ''.join(map(attrgetter('sym'), row)) for row in self.grid
+        ])
 
     def print_map(self):
         print(self)

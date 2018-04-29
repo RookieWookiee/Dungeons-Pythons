@@ -9,7 +9,5 @@ class Enemy(WarUnit, Walkable, Printable):
     def __init__(self, *, health, mana, damage, row=None, col=None):
         super().__init__(row, col, health, mana, damage)
 
-    def __on_enter(self, obj):
+    def _on_enter(self, obj):
         print('Fight!')
-
-    _on_enter = __on_enter

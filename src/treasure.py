@@ -9,7 +9,5 @@ class Treasure(GameObject, Walkable, Printable):
     def __init__(self, *, row, col):
         super().__init__(row, col)
 
-    def __on_enter(self, obj):
-        print('Na ti kompot')
-
-    _on_enter = __on_enter
+    def _on_enter(self, obj):
+        print('kompot')
