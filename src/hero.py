@@ -18,7 +18,5 @@ class Hero(WarUnit, Walkable, Printable):
     def known_as(self):
         return "{} the {}".format(self.name, self.title)
 
-    def __on_enter(self, obj):
+    def _on_enter(self, obj):
         print('Fight')
-
-    _on_enter = __on_enter

@@ -10,8 +10,6 @@ class Gateway(GameObject, Occupiable, Printable):
         super().__init__(row, col)
         self.occupant = None
 
-    def __on_enter(self, obj):
-        self.occupant = obj
+    def _on_enter(self, obj):
+        super()._on_enter(obj)
         print("You've reached the end of the level. Na ti kompot")
-
-    _on_enter = __on_enter
