@@ -7,7 +7,7 @@ class OccupiableMixin(WalkableMixin):
 
     def trigger_enter_event(self, obj):
         if self.occupant is not None:
-            ret = self.occupant.trigger_enter_event(obj)
+            ret = self.occupant._on_enter(obj)
             if not ret:
                 return
 

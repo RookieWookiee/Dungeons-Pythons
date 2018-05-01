@@ -11,3 +11,4 @@ class Enemy(WarUnit, Walkable, Printable):
 
     def _on_enter(self, obj):
         print('Fight!')
+        return True
