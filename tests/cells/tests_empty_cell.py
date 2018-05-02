@@ -18,7 +18,7 @@ class OccupiableEmptyCellTests(unittest.TestCase):
         cell = EmptyCell(row=0, col=0)
 
         occupant = Mock()
-        occupant.trigger_enter_event.return_value = True
+        occupant._on_enter.return_value = True
 
         cell.occupant = occupant
 
@@ -32,7 +32,7 @@ class OccupiableEmptyCellTests(unittest.TestCase):
         cell = EmptyCell(row=0, col=0)
 
         occupant = Mock()
-        occupant.trigger_enter_event.return_value = False
+        occupant._on_enter.return_value = False
         cell.occupant = occupant
 
         new_occupant = Mock()

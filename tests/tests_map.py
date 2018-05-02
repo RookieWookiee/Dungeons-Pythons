@@ -19,15 +19,13 @@ class MapInitAndSpawnTests(unittest.TestCase):
 
     def test_init_cell_instance_correctess(self):
         # black magic
-        input = ['S.#' ,'GET']
+        input = ['S.#', 'GET']
 
         expected = [
                 [self.SpawnMock, self.EmptyCellMock, self.WallMock],
                 [self.GatewayMock, self.EmptyCellMock, self.EmptyCellMock]]
 
-        map = Map(input)
-        actual = [[type(x) for x in row] for row in map.grid]
-
+        Map(input)
         for row, mocks in zip(range(2), expected):
             for col, ctor_mock in zip(range(3), mocks):
                 all_kwargs = [kwargs for args, kwargs in ctor_mock.call_args_list]
@@ -81,7 +79,7 @@ class MapInitAndSpawnTests(unittest.TestCase):
 
         test_map = Mock()
         test_map.grid = [[self.SpawnMock.return_value]]
-        
+
         Map.spawn(test_map, self.HeroMock())
 
         self.EmptyCellMock.assert_called_with(row=0, col=0)
@@ -107,6 +105,7 @@ class MapInitAndSpawnTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             Map.spawn(hero)
 
+
 class MapMovementTests(unittest.TestCase):
     def setUp(self):
         class_dependencies = [
@@ -129,7 +128,7 @@ class MapMovementTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Map.move_hero(self.map, 'up')
 
-    @patch('src.map.isinstance')
+    @patch('src.decorators.isinstance')
     def tests_move_on_walkable_objects_in_bounds_should_return_true(self, isinstance_mock):
         self.map.hero = self.hero
         isinstance_mock.return_value = True
@@ -181,31 +180,35 @@ class MapMovementTests(unittest.TestCase):
         with self.subTest('move right'):
             self.assertFalse(Map.move_hero(self.map, 'right'))
 
-    @patch('src.map.isinstance')
+    @patch('src.decorators.isinstance')
     def test_move_on_non_walkable_object_should_return_false(self, isinstance_mock):
         self.map.hero = self.hero
         empty_cell, wall_cell = self.EmptyCellMock.return_value, self.WallMock.return_value
-        self.map.grid = [[wall_cell, wall_cell, wall_cell ], [wall_cell, empty_cell, wall_cell], [wall_cell, wall_cell, wall_cell ]]
+        self.map.grid = [
+            [wall_cell, wall_cell, wall_cell],
+            [wall_cell, empty_cell, wall_cell],
+            [wall_cell, wall_cell, wall_cell]
+        ]
         self.hero.row, self.hero.col = 1, 1
 
         isinstance_mock.return_value = False
-        
+
         self.assertFalse(Map.move_hero(self.map, 'up'))
         self.assertFalse(Map.move_hero(self.map, 'down'))
         self.assertFalse(Map.move_hero(self.map, 'left'))
         self.assertFalse(Map.move_hero(self.map, 'right'))
 
-    @patch('src.map.isinstance')
+    @patch('src.decorators.isinstance')
     def test_move_should_update_hero_coordinated(self, isinstance_mock):
         self.map.hero = self.hero
-        empty_cell  = self.EmptyCellMock.return_value
+        empty_cell = self.EmptyCellMock.return_value
         self.hero.row, self.hero.col = 0, 0
 
         self.map.grid = [[empty_cell, empty_cell]]
         Map.move_hero(self.map, 'right')
         self.assertEqual((self.hero.row, self.hero.col), (0, 1))
 
-    @patch('src.map.isinstance')
+    @patch('src.decorators.isinstance')
     def test_move_should_trigger_leave_event(self, isinstance_mock):
         self.map.hero = self.hero
         self.hero.row, self.hero.col = 0, 0
@@ -216,7 +219,7 @@ class MapMovementTests(unittest.TestCase):
         Map.move_hero(self.map, 'right')
         empty_cell.trigger_leave_event.assert_called_with()
 
-    @patch('src.map.isinstance')
+    @patch('src.decorators.isinstance')
     def test_move_should_trigger_enter_event_on_targer_cell(self, isinstance_mock):
         self.map.hero = self.hero
         self.hero.row, self.hero.col = 0, 0

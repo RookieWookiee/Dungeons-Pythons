@@ -7,7 +7,7 @@ from src.hero import Hero
 from src.enemy import Enemy
 
 from src.mixins.walkable import WalkableMixin
-from src.decorators import accepts
+from src.decorators import accepts, validate_move
 
 from os import linesep
 from operator import attrgetter
@@ -89,26 +89,9 @@ class Map:
         except StopIteration:
             return False
 
-    @accepts(str)
-    def move_hero(self, direction):
-        if self.hero is None:
-            raise ValueError('A hero must be spawned first')
-        if direction not in ('up', 'down', 'left', 'right'):
-            raise ValueError('Invalid direction: expected one of the following: up, down, left, right')
-
-        dx = 1 if direction == 'right' else -1 if direction == 'left' else 0
-        dy = 1 if direction == 'down' else -1 if direction == 'up' else 0
-
+    @validate_move
+    def move_hero(self, target_row, target_col):
         from_row, from_col = self.hero.row, self.hero.col
-        target_row, target_col = from_row + dy, from_col + dx
-        if (target_row < 0
-                or target_row >= len(self.grid)):
-            return False
-        if (target_col < 0 or target_col >= len(self.grid[target_row])):
-            return False
-
-        if not isinstance(self.grid[target_row][target_col], WalkableMixin):
-            return False
 
         self.hero.row, self.hero.col = target_row, target_col
         self.grid[from_row][from_col].trigger_leave_event()
