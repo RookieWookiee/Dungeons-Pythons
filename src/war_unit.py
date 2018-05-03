@@ -4,6 +4,7 @@ from src.spell import Spell
 
 
 class WarUnit(GameObject):
+
     def __init__(self, row, col, health, mana, damage=0):
         super().__init__(row, col)
         self.health = health
@@ -74,6 +75,8 @@ class WarUnit(GameObject):
 
     def attack(self, by=None):
         # To be refactored
+        # Wrong method !!!
+        # Logic for first_hit and etc ...
         if by == "weapon":
             if self.weapon:
                 return self.weapon.damage
