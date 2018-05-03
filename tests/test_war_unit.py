@@ -3,12 +3,14 @@ from src.war_unit import WarUnit
 from src.weapon import Weapon
 from src.spell import Spell
 from src.hero import Hero
+from src.enemy import Enemy
 
 
 class TestWarUnit(unittest.TestCase):
     def setUp(self):
         self.hero = Hero(health=100, mana=50,
                          name="Yamamoto", title="Samurai", mana_regeneration_rate=2)
+        self.enemy = Enemy(health=100, mana=100, damage=20)
 
     def test_is_alive(self):
         with self.subTest("Test if hero is alive"):
@@ -67,21 +69,36 @@ class TestWarUnit(unittest.TestCase):
             self.assertEqual(self.hero.health, self.hero._max_health)
 
     def test_attack(self):
-        self.hero.weapon = Weapon(name="bow", damage=10)
-        self.hero.spell = Spell(
-            name="Fireball", damage=30, mana_cost=50, cast_range=2)
+        weapon = Weapon(name="bow", damage=10)
+        spell = Spell(name="Fireball", damage=30, mana_cost=50, cast_range=2)
+        gun = Weapon(name="gun", damage=40)
+        ice = Spell(name="Ice", damage=50, mana_cost=50, cast_range=1)
+        self.hero.equip(weapon)
+        self.hero.learn(spell)
+
+        with self.subTest("Hero attack with spell.damage > weapon.damage"):
+            self.assertEqual(self.hero.attack(), spell.damage)
+
+        with self.subTest("Hero attack with weapon if hero dont know spell"):
+            self.hero.weapon = None
+            self.assertEqual(self.hero.attack(), spell.damage)
+
+        with self.subTest("Enemy attack with only damage"):
+            self.assertEqual(self.enemy.attack(), self.enemy.damage)
+
+        with self.subTest("Enemy attack with weapon"):
+            self.enemy.equip(gun)
+            self.assertEqual(self.enemy.attack(), gun.damage)
+
         with self.subTest("Attack method by weapon"):
+            self.hero.equip(weapon)
             self.assertEqual(self.hero.attack(by="weapon"), 10)
 
         with self.subTest("Attack method by spell"):
             self.assertEqual(self.hero.attack(by="spell"), 30)
 
-        with self.subTest("Attack method by damage"):
-            self.assertEqual(self.hero.attack(), 0)
-
-        self.hero.weapon = None
-
         with self.subTest("Try to attack with non-existent weapon"):
+            self.hero.weapon = None
             self.assertEqual(self.hero.attack(by="weapon"), 0)
 
         with self.subTest("Try to attack with spell if hero's mana is lower than the Spell.mana_cost"):

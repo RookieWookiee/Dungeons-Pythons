@@ -23,12 +23,12 @@ class Fight:
             if not self.hero.is_alive():
                 break
 
-        return hero if self.hero.is_alive() else self.enemy
+        return self.hero if self.hero.is_alive() else self.enemy
 
 
-h = Hero(health=100, mana=50, name="Yamamoto",
-         title="Samurai", mana_regeneration_rate=2)
+# h = Hero(health=100, mana=50, name="Yamamoto",
+#          title="Samurai", mana_regeneration_rate=2)
 
-e = Enemy(health=100, mana=100, damage=20)
+# e = Enemy(health=100, mana=100, damage=20)
 
-f = Fight(h, e)
+# f = Fight(h, e)

@@ -73,23 +73,34 @@ class WarUnit(GameObject):
         else:
             self.mana = self._max_mana
 
+    def __attack_more_damage(self):
+        if self.weapon.damage > self.spell.damage:
+            return self.weapon.damage
+        return self.spell.damage
+
     def attack(self, by=None):
-        # To be refactored
-        # Wrong method !!!
-        # Logic for first_hit and etc ...
-        if by == "weapon":
-            if self.weapon:
-                return self.weapon.damage
+        if not by:
+            if self.weapon and self.spell:
+                return self.__attack_more_damage()
+            elif self.weapon or self.spell:
+                try:
+                    return self.weapon.damage
+                except AttributeError:
+                    return self.spell.damage
             else:
+                return self.damage
+        elif by == "weapon":
+            try:
+                return self.weapon.damage
+            except AttributeError:
                 return 0
-        if by == "spell":
-            if self.spell:
+        elif by == "spell":
+            try:
                 if self.mana >= self.spell.mana_cost:
                     self.mana -= self.spell.mana_cost
                     return self.spell.damage
                 else:
                     raise ValueError(
                         "Your mana is lower than the spell mana_cost.")
-            else:
+            except AttributeError:
                 return 0
-        return self.damage
